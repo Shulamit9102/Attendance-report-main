@@ -26,6 +26,25 @@ def test_parser_b():
     assert report.rows[0].entry_time == "08:00"
     assert report.rows[0].exit_time == "17:00"
 
+
+@pytest.mark.parametrize(
+    ("parser_class", "sample_text"),
+    [
+        (ParserA, "07/02/2023 שבת"),
+        (ParserB, "07/02/2023 שבת"),
+    ],
+)
+def test_saturday_without_hours_is_preserved(parser_class, sample_text):
+    report = parser_class().parse(sample_text)
+
+    assert len(report.rows) == 1
+    saturday = report.rows[0]
+    assert saturday.day_of_week == "שבת"
+    assert saturday.entry_time == ""
+    assert saturday.exit_time == ""
+    assert saturday.total_hours is None
+
+
 def test_parser_empty_text_raises_error():
     """בדיקה שטקסט ריק זורק שגיאה."""
     parser = ParserA()

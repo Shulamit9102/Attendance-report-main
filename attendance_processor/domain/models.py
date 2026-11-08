@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional
+from typing import Optional, Tuple
 
 
 class ReportType(Enum):
@@ -22,19 +22,21 @@ class AttendanceRow:
     percentage_100: Optional[str] = None
     percentage_125: Optional[str] = None
     percentage_150: Optional[str] = None
-    shabat: Optional[str] = None
     notes: Optional[str] = None  # הערות סוג B
 
 
-@dataclass
+@dataclass(frozen=True)
 class ReportSummary:
     """שורת סיכום של הדו"ח (קיימת בעיקר בסוג A)."""
     total_hours_sum: Optional[str] = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class AttendanceReport:
     """האובייקט המרכזי (החוזה) שמכיל את כל נתוני הדו"ח שעברו פרסור."""
     report_type: ReportType
-    rows: List[AttendanceRow]
+    rows: Tuple[AttendanceRow, ...]
     summary: Optional[ReportSummary] = None
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "rows", tuple(self.rows))

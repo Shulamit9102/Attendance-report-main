@@ -28,9 +28,6 @@ class ParserA(BaseParser):
         clean_line = re.sub(r'[\u200e\u200f\u202a-\u202e]', '', line)
 
         times = re.findall(r'\b\d{2}:\d{2}\b', clean_line)
-        if not times:
-            return None
-
         date_match = re.search(r'\b\d{2}/\d{2}/\d{4}\b', clean_line)
         date_str = date_match.group(0) if date_match else ""
 
@@ -40,6 +37,9 @@ class ParserA(BaseParser):
             if day in clean_line:
                 day_str = day
                 break
+
+        if not times and (not date_str or day_str != "שבת"):
+            return None
 
         return AttendanceRow(
             date=date_str,

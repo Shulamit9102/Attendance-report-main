@@ -25,7 +25,6 @@ TYPE_B_COLUMNS: List[Dict[str, str]] = [
     {"key": "percentage_100", "label": "100%"},
     {"key": "percentage_125", "label": "125%"},
     {"key": "percentage_150", "label": "150%"},
-    {"key": "shabat", "label": "שבת/חג"},
     {"key": "notes", "label": "הערות"},
 ]
 

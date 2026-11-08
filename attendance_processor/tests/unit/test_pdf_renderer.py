@@ -4,6 +4,7 @@ import pytest
 from pathlib import Path
 from domain.models import AttendanceReport, AttendanceRow, ReportType, ReportSummary
 from src.services.exporters.pdf_renderer import PdfRenderer
+from src.services.exporters.layouts import get_layout_for_report_type
 
 
 @pytest.fixture
@@ -44,3 +45,24 @@ def test_renderer_empty_report(tmp_path):
     output_file = tmp_path / "empty_report.pdf"
     # לא אמור לזרוק שגיאה חריגה, אלא לסיים בבטחה
     renderer.render(empty_report, str(output_file))
+
+
+def test_html_includes_saturday_row_without_hours():
+    report = AttendanceReport(
+        report_type=ReportType.TYPE_B,
+        rows=[
+            AttendanceRow(
+                date="07/02/2023",
+                day_of_week="שבת",
+                entry_time="",
+                exit_time="",
+            )
+        ],
+    )
+    renderer = PdfRenderer()
+
+    html_content = renderer._generate_html(
+        report, get_layout_for_report_type(report.report_type)
+    )
+
+    assert "<td>שבת</td><td></td><td></td>" in html_content
